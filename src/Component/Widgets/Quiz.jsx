@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Speech from "react-speech";
 import ReadAndHighlight from "./ReadAndHighlight";
 import mic from "../../images/mic.png";
 import stop from "../../images/stop.png";
