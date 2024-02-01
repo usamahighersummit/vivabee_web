@@ -1,0 +1,91 @@
+.login-button {
+  color: #ece5f2;
+  font-size: 14px;
+  line-height: 20px;
+  float: right;
+  background: black;
+  border-radius: 5px;
+  font-weight: 600;
+  /* 6px */
+  ;
+  font-weight: normal;
+  padding-top: 0.5rem
+    /* 8px */
+  ;
+  padding-bottom: 0.5rem
+    /* 8px */
+  ;
+  padding-left: 1rem
+    /* 16px */
+  ;
+  padding-right: 1rem
+    /* 16px */
+  ;
+}
+.enter-classcode {
+  color: #1d192b;
+  text-align: center;
+  font-family: Segoe UI;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 750;
+  line-height: 32px;
+  /* 133.333% */
+}
+.classcode-instruction {
+  color: #49454f;
+  text-align: center;
+  font-family: Segoe UI;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  /* 142.857% */
+}
+.cLasscode-input {
+  /* width: 284px; */
+  height: 72px;
+  border-radius: 4px;
+  border: 1px solid rgba(121, 116, 126, 0.5);
+  font-family: Segoe UI;
+}
+
+
+@keyframes blinker {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.blinking {
+  animation: blinker 1s linear infinite;
+}
+ @keyframes rotate {
+   from {
+     transform: rotate(0deg);
+   }
+
+   to {
+     transform: rotate(360deg);
+   }
+ }
+
+ .rotate {
+   animation: rotate 2s linear infinite;
+   
+ }
+ @media (max-width: 320px) {
+   .mic {
+     height: 50px;
+   
+     width: 50px;
+   
+   }
+
+   .mic img {
+     max-width: 50px;
+  
+     max-height: 50px;
+    
+   }
+ }
