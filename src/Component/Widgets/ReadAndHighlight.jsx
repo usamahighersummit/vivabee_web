@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
 
-const ReadAndHighlight = ({ paragraph, replay, setReplay, setRotate }) => {
+const ReadAndHighlight = ({
+  paragraph,
+  replay,
+  setReplay,
+  setRotate,
+  scrollToBottomSmoothly,
+}) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(-5);
   const words = useMemo(
     () => paragraph.match(/"[^"]+"|[^\s_=]+/g) || [],
@@ -16,6 +22,7 @@ const ReadAndHighlight = ({ paragraph, replay, setReplay, setRotate }) => {
       clearInterval(highlightInterval);
       setCurrentWordIndex(-5);
       setRotate(false);
+      scrollToBottomSmoothly();
     };
 
     const speakAndHighlight = () => {

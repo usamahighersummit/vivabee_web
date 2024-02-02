@@ -131,6 +131,11 @@ const Quiz = ({ index, question, setIndex }) => {
 
     cancel.current = true;
   };
+  function scrollToBottomSmoothly() {
+    var contentDiv = document.querySelector(".main-content-divs"); // Adjust the selector as needed
+
+    contentDiv.scrollTop = contentDiv?.scrollHeight;
+  }
 
   const defaultOptions = {
     loop: true,
@@ -195,6 +200,7 @@ const Quiz = ({ index, question, setIndex }) => {
             replay={replay}
             setReplay={setReplay}
             setRotate={setRotate}
+            scrollToBottomSmoothly={scrollToBottomSmoothly}
           />
         </p>
         <div style={{ display: feedback.length > 0 ? "block" : "none" }}>
@@ -233,11 +239,11 @@ const Quiz = ({ index, question, setIndex }) => {
           </p>
         </div>
         <div
-          className="container bg-[#5E526B] p-[12px]"
+          className="container main-content-divs bg-[#5E526B] p-[12px]"
           style={{
             display: feedback.length > 0 ? "block" : "none",
-            height: "25%",
-            overflowY: "auto",
+            overflowY: "hidden",
+            height: "20%",
           }}
         >
           <h5
@@ -274,6 +280,7 @@ const Quiz = ({ index, question, setIndex }) => {
               replay={replay}
               setReplay={setReplay}
               setRotate={setRotate}
+              scrollToBottomSmoothly={scrollToBottomSmoothly}
             />
           </p>
         </div>
