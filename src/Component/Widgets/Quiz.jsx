@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReadAndHighlight from "./ReadAndHighlight";
 import mic from "../../images/mic.png";
 import stop from "../../images/stop.png";
@@ -19,6 +19,8 @@ const Quiz = ({ index, question, setIndex }) => {
   const [count, setCount] = useState(0);
   const [replay, setReplay] = useState(false);
   const [rotate, setRotate] = useState(false);
+
+  const cancel = useRef(false);
   const startListening = () => {
     if (!listening) {
       SpeechRecognition.startListening({ continuous: true });
@@ -37,6 +39,7 @@ const Quiz = ({ index, question, setIndex }) => {
     setReplay(false);
     setFeedback("");
     setIndex(index + 1);
+    setCount(0);
   };
   const getData = () => {
     // alert(
@@ -70,9 +73,11 @@ const Quiz = ({ index, question, setIndex }) => {
   }, []);
   const getFeedback = () => {
     setIsAnalyzing(true);
+    console.log("transcript :" + transcript);
+    let student_answer = transcript;
     let quiz_content = {
       question: question ? question.data[index].question : "",
-      student_answer: transcript > 0 ? transcript : "",
+      student_answer: student_answer ? student_answer : "",
       answer: question ? question.data[index].answer : "",
       rubric: question ? question.data[index].rubric : "",
     };
@@ -90,14 +95,18 @@ const Quiz = ({ index, question, setIndex }) => {
         quiz_content: JSON.stringify(quiz_content),
       })
       .then((res) => {
+        console.log("Quiz Content is:" + JSON.stringify(quiz_content));
         console.log("feedback is : ", res.data);
         const interval = setInterval(() => {
           setCount((prevCount) => {
-            if (prevCount >= 3) {
+            if (prevCount === 3) {
               clearInterval(interval);
               setIsAnalyzing(false);
-              setFeedback(res.data);
+              if (!cancel.current) {
+                setFeedback(res.data);
+              }
             }
+
             return prevCount + 1;
           });
         }, 1500);
@@ -105,6 +114,8 @@ const Quiz = ({ index, question, setIndex }) => {
       .catch((error) => {
         console.log(error);
       });
+    cancel.current = false;
+    setCount(0);
   };
   const handleReplay = () => {
     window.speechSynthesis.cancel();
@@ -112,6 +123,15 @@ const Quiz = ({ index, question, setIndex }) => {
     setReplay(true);
     setRotate(true);
   };
+  const onCancel = () => {
+    setFeedback("");
+    resetTranscript();
+    setReplay(false);
+    setIsAnalyzing(false);
+
+    cancel.current = true;
+  };
+
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -153,7 +173,8 @@ const Quiz = ({ index, question, setIndex }) => {
             marginBottom: "22px",
           }}
         >
-          Question {index + 1}.
+          Question {index + 1} of{" "}
+          <span className="ml-[2px]">{question?.data?.length}</span>.
         </h5>
         <p
           className="md:w-[40%]"
@@ -176,40 +197,41 @@ const Quiz = ({ index, question, setIndex }) => {
             setRotate={setRotate}
           />
         </p>
+        <div style={{ display: feedback.length > 0 ? "block" : "none" }}>
+          <h5
+            style={{
+              color: "rgba(255, 255, 255, 0.84)",
+              marginTop: "52px",
+              fontFamily: "Roboto",
+              fontSize: "28px",
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: "28px" /* 100% */,
+              letterSpacing: "0.028px",
+              marginBottom: "22px",
+            }}
+          >
+            {transcript.length > 0 ? "Your answer." : null}
+          </h5>
 
-        <h5
-          style={{
-            color: "rgba(255, 255, 255, 0.84)",
-            marginTop: "52px",
-            fontFamily: "Roboto",
-            fontSize: "28px",
-            fontStyle: "normal",
-            fontWeight: "700",
-            lineHeight: "28px" /* 100% */,
-            letterSpacing: "0.028px",
-            marginBottom: "22px",
-          }}
-        >
-          {transcript.length > 0 ? "Your answer." : null}
-        </h5>
-
-        <p
-          className="md:w-[40%]"
-          style={{
-            color: "rgba(255, 255, 255)",
-            opacity: "70%",
-            fontFamily: "Roboto",
-            fontSize: "22px",
-            fontStyle: "normal",
-            fontWeight: "400",
-            lineHeight: "28px" /* 127.273% */,
-            letterSpacing: "0.022px",
-            width: "125%",
-            marginBottom: "36px",
-          }}
-        >
-          {transcript}
-        </p>
+          <p
+            className="md:w-[40%]"
+            style={{
+              color: "rgba(255, 255, 255)",
+              opacity: "70%",
+              fontFamily: "Roboto",
+              fontSize: "22px",
+              fontStyle: "normal",
+              fontWeight: "400",
+              lineHeight: "28px" /* 127.273% */,
+              letterSpacing: "0.022px",
+              width: "125%",
+              marginBottom: "36px",
+            }}
+          >
+            {transcript}
+          </p>
+        </div>
         <div
           className="container bg-[#5E526B] p-[12px]"
           style={{
@@ -255,7 +277,12 @@ const Quiz = ({ index, question, setIndex }) => {
             />
           </p>
         </div>
-        <div style={{ display: !isAnalyzing ? "none" : "block" }}>
+        <div
+          style={{
+            display: !isAnalyzing ? "none" : "block",
+            marginTop: "28px",
+          }}
+        >
           <center>
             <div
               style={{
@@ -268,14 +295,25 @@ const Quiz = ({ index, question, setIndex }) => {
                 lineHeight: "28px",
                 letterSpacing: "0.015px",
                 width: "320px",
-                padding: "40px",
+                padding: "30px",
                 borderRadius: "4px",
               }}
             >
               <center>
                 {" "}
                 <Lottie options={defaultOptions} height={150} width={150} /> (
-                {count}/3) analyzing...
+                {count}/3){" "}
+                {count === 1
+                  ? "uploading..."
+                  : count === 2
+                  ? "transcribing..."
+                  : count === 3
+                  ? "analyzing..."
+                  : "loading..."}
+                <br />
+                <button onClick={onCancel} style={{ color: "#403151" }}>
+                  <u>cancel</u>
+                </button>
               </center>
             </div>
           </center>
@@ -317,13 +355,13 @@ const Quiz = ({ index, question, setIndex }) => {
           style={{
             position: "fixed",
             zIndex: 1000,
-            bottom: "60px",
+            bottom: "100px",
             left: "50%",
             transform: "translateX(-50%)",
             display: feedback.length === 0 && !isAnalyzing ? "block" : "none",
             // Add default button size, then adjust in media query as needed
             height: "70px",
-            width: "70px",
+            width: "100%",
           }}
           className={listening ? "blinking mic" : "mic"}
           onClick={startListening}
@@ -350,6 +388,54 @@ const Quiz = ({ index, question, setIndex }) => {
               display: listening ? "inline" : "none",
             }}
           />
+          <p
+            style={{
+              fontFamily: "Roboto",
+              fontSize: "14px",
+              fontStyle: "normal",
+              fontWeight: "500",
+              lineHeight: "20px",
+              letterSpacing: "0.1px",
+              padding: "8px",
+              width: "100%",
+              color: "#F1F1F1",
+              display: listening ? "none" : "block",
+            }}
+          >
+            Just press the <b>🎙️Record button</b>, start speaking your answer
+          </p>
+          <p
+            style={{
+              fontFamily: "Roboto",
+              fontSize: "14px",
+              fontStyle: "normal",
+              fontWeight: "500",
+              lineHeight: "20px",
+              letterSpacing: "0.1px",
+              padding: "8px",
+              width: "100%",
+              color: "#F1F1F1",
+              display: listening ? "block" : "none",
+            }}
+          >
+            <b>Finished Speaking?</b>
+          </p>
+          <p
+            style={{
+              fontFamily: "Roboto",
+              fontSize: "14px",
+              fontStyle: "normal",
+              fontWeight: "500",
+              lineHeight: "20px",
+              letterSpacing: "0.1px",
+              padding: "8px",
+              width: "100%",
+              color: "#F1F1F1",
+              display: listening ? "block" : "none",
+            }}
+          >
+            Simply press the <b>⏹️ Stop button</b> to end your recording
+          </p>
         </button>
       </div>
     </>

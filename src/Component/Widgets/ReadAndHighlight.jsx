@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 const ReadAndHighlight = ({ paragraph, replay, setReplay, setRotate }) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(-5);
-  const words = paragraph.match(/"[^"]+"|[^\s_=]+/g) || [];
+  const words = useMemo(
+    () => paragraph.match(/"[^"]+"|[^\s_=]+/g) || [],
+    [paragraph]
+  );
 
   const totalWords = words.length;
 
@@ -11,7 +14,7 @@ const ReadAndHighlight = ({ paragraph, replay, setReplay, setRotate }) => {
 
     const handleSpeakEnd = () => {
       clearInterval(highlightInterval);
-      setCurrentWordIndex(-4);
+      setCurrentWordIndex(-5);
       setRotate(false);
     };
 
@@ -50,7 +53,7 @@ const ReadAndHighlight = ({ paragraph, replay, setReplay, setRotate }) => {
       setCurrentWordIndex(-5);
       setReplay(false);
     };
-  }, [paragraph, replay, setReplay, setRotate, totalWords]);
+  }, [paragraph, replay, setReplay, setRotate, totalWords, words]);
 
   return (
     <p>

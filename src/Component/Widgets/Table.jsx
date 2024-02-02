@@ -1,4 +1,3 @@
-import { useState } from "react";
 import React from "react";
 import axios from "axios";
 const Table = ({ data, getData, openModal, setEditData }) => {
