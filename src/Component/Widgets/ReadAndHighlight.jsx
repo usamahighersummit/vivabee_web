@@ -31,7 +31,6 @@ const ReadAndHighlight = ({
       const selectedVoice = voices.find((voice) => voice.name === "Samantha");
 
       const utterance = new SpeechSynthesisUtterance(paragraph);
-      utterance.rate = 0.7;
       utterance.voice = selectedVoice;
       utterance.onend = handleSpeakEnd;
       speechSynthesis.speak(utterance);
@@ -47,7 +46,7 @@ const ReadAndHighlight = ({
           }
           return nextIndex;
         });
-      }, utterance.rate * 3200);
+      }, utterance.rate * 1800);
     };
 
     if (words.length > 0) {
