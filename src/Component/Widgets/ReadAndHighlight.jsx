@@ -7,7 +7,7 @@ const ReadAndHighlight = ({
   setRotate,
   scrollToBottomSmoothly,
 }) => {
-  const [currentWordIndex, setCurrentWordIndex] = useState(-5);
+  const [currentWordIndex, setCurrentWordIndex] = useState(-2);
   const words = useMemo(
     () => paragraph.match(/"[^"]+"|[^\s_=]+/g) || [],
     [paragraph]
@@ -30,8 +30,8 @@ const ReadAndHighlight = ({
       const voices = window.speechSynthesis.getVoices();
       const selectedVoice = voices.find((voice) => voice.name === "Samantha");
 
-      const utterance = new SpeechSynthesisUtterance(words);
-      utterance.rate = 0.6;
+      const utterance = new SpeechSynthesisUtterance(paragraph);
+      utterance.rate = 0.7;
       utterance.voice = selectedVoice;
       utterance.onend = handleSpeakEnd;
       speechSynthesis.speak(utterance);
@@ -47,7 +47,7 @@ const ReadAndHighlight = ({
           }
           return nextIndex;
         });
-      }, utterance.rate * 3600);
+      }, utterance.rate * 3200);
     };
 
     if (words.length > 0) {
@@ -57,7 +57,7 @@ const ReadAndHighlight = ({
     return () => {
       speechSynthesis.cancel();
       clearInterval(highlightInterval);
-      setCurrentWordIndex(-5);
+      setCurrentWordIndex(-2);
       setReplay(false);
     };
   }, [paragraph, replay, setReplay, setRotate, totalWords, words]);
