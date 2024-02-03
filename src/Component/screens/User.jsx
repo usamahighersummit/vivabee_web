@@ -39,7 +39,7 @@ const User = () => {
   }, []);
 
   return (
-    <div className="bg-[#403151] ">
+    <div className="bg-[#403151] h-[100vh]">
       <div className="fix">
         <div className="flex  ml-[20px]" style={{ gap: "16px" }}>
           <button
