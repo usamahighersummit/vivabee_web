@@ -5,7 +5,10 @@ import Table from "../Widgets/Table";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import FORM from "../Widgets/Form";
+import { useLocation, useNavigate } from "react-router-dom";
 const Admin = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState();
   const [editData, setEditData] = useState();
@@ -34,6 +37,10 @@ const Admin = () => {
     setIsModalOpen(false);
   };
   useEffect(() => {
+    if (location.state) {
+    } else {
+      navigate("/");
+    }
     getData();
   }, []);
 

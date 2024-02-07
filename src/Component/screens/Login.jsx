@@ -21,18 +21,27 @@ const Login = () => {
         document.getElementById("login").style.backgroundColor = "black";
 
         document.getElementById("login").innerHTML = "Loading....";
-        if (res.data.web_user_auth_type[0] === 2) {
+        if (res.data.web_user_auth_type[0] === 1) {
           setTimeout(function () {
-            navigate(`/admin`);
+            navigate(`/admin`, {
+              state: {
+                login: 1,
+              },
+            });
           }, 2000);
-        } else if (res.data.web_user_auth_type[0] === 1) {
+        } else if (res.data.web_user_auth_type[0] === 2) {
           setTimeout(function () {
-            navigate(`/home`);
+            navigate(`/admin`, {
+              state: {
+                login: 1,
+              },
+            });
           }, 2000);
         }
       })
       .catch((error) => {
         console.log(error);
+        alert("wrong code");
       });
   };
 
