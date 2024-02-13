@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Model from "react-modal";
 import axios from "axios";
-const Modal = ({ isOpen, closeModal, getData, editData }) => {
+const Modal = ({ isOpen, closeModal, getData, editData,id }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [rubric, setRubric] = useState("");
@@ -18,6 +18,7 @@ const Modal = ({ isOpen, closeModal, getData, editData }) => {
         question: question,
         answer: answer,
         rubric: rubric,
+        viva_id: id,
       })
       .then((res) => {
         console.log("Question Added : ", res);
@@ -46,6 +47,7 @@ const Modal = ({ isOpen, closeModal, getData, editData }) => {
         question: question,
         answer: answer,
         rubric: rubric,
+        viva_id: id,
       })
       .then((res) => {
         console.log("Question Updated : ", res);

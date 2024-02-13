@@ -8,7 +8,8 @@ import Lottie from "react-lottie";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
-const Quiz = ({ index, question, setIndex }) => {
+
+const Quiz = ({ index, question, setIndex, setFeedback2 }) => {
   const { transcript, listening, resetTranscript } = useSpeechRecognition();
   const [evaluationModel, setEvaluationModel] = useState("");
   const [evaluationIdentity, setEvaluationIdentity] = useState("");
@@ -19,7 +20,9 @@ const Quiz = ({ index, question, setIndex }) => {
   const [count, setCount] = useState(1);
   const [replay, setReplay] = useState(false);
   const [rotate, setRotate] = useState(false);
-
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const viva_id = params.get("id");
   const cancel = useRef(false);
   const startListening = () => {
     if (!listening) {
@@ -35,11 +38,20 @@ const Quiz = ({ index, question, setIndex }) => {
   };
 
   const onNextQuestion = () => {
+    if(question.data?.length === index + 1){
+     setFeedback2(true)
+     resetTranscript();
+     setReplay(false);
+     setFeedback("");
+     setCount(1);
+    }
+    else{
     resetTranscript();
     setReplay(false);
     setFeedback("");
     setIndex(index + 1);
     setCount(1);
+    }
   };
   const getData = () => {
     // alert(
@@ -53,8 +65,9 @@ const Quiz = ({ index, question, setIndex }) => {
       "application/json;charset=utf-8";
     axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
     axios
-      .get(process.env.REACT_APP_REST_API_BASE_URL + "/get_question_prompts", {
-        method: "GET",
+      .post(process.env.REACT_APP_REST_API_BASE_URL + "/get_question_prompts", {
+        method: "POST",
+        viva_id: viva_id,
       })
       .then((res) => {
         console.log("data here : ", res.data.data[0]);
@@ -86,7 +99,7 @@ const Quiz = ({ index, question, setIndex }) => {
       "application/json;charset=utf-8";
     axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
     axios
-      .post(process.env.REACT_APP_REST_API_BASE_URL + "/get_feedback", {
+      .post(process.env.REACT_APP_REST_API_BASE_URL + "/get_feedback_ai", {
         method: "POST",
         evaluation_model: evaluationModel,
         evaluation_identity: evaluationIdentity,
@@ -148,7 +161,7 @@ const Quiz = ({ index, question, setIndex }) => {
   return (
     <>
       <div className="md:flex md:justify-center md:items-center ">
-        <div className="md:w-[40%]  lg:w-[40%] xl:w-[60%] ">
+        <div className="md:w-[40%]  lg:w-[40%] xl:w-[60%] " >
           <button className="mb-[8px] mt-[8px]" onClick={handleReplay}>
             <svg
               className={rotate ? "rotate" : ""}
@@ -165,7 +178,7 @@ const Quiz = ({ index, question, setIndex }) => {
               />
             </svg>
           </button>
-
+<div>
           <h5
             style={{
               color: "rgba(255, 255, 255, 0.84)",
@@ -197,7 +210,7 @@ const Quiz = ({ index, question, setIndex }) => {
             }}
           >
             <ReadAndHighlight
-              paragraph={question ? question.data[index].question : "n/a"}
+              paragraph={question ? question?.data[index]?.question : "n/a"}
               replay={replay}
               setReplay={setReplay}
               setRotate={setRotate}
@@ -335,9 +348,9 @@ const Quiz = ({ index, question, setIndex }) => {
               gap: "8px",
               borderRadius: "4px",
               backgroundColor:
-                question.data?.length === index + 1 ? "transparent" : "#F1F1F1",
+              "#F1F1F1",
               color:
-                question.data?.length === index + 1 ? "#F1F1F1" : "#32263F",
+               "#32263F",
               fontFamily: "Roboto",
               fontSize: "14px",
               fontStyle: "normal",
@@ -348,12 +361,12 @@ const Quiz = ({ index, question, setIndex }) => {
               width: "137px",
               marginBottom: "24px",
             }}
-            disabled={question.data?.length === index + 1}
+       
             onClick={onNextQuestion}
           >
             <b>
               {question.data?.length === index + 1
-                ? "Completed"
+                ? "Feedback"
                 : "Next question"}
             </b>
           </button>
@@ -446,7 +459,10 @@ const Quiz = ({ index, question, setIndex }) => {
               Simply press the <b>⏹️ Stop button</b> to end your recording
             </p>
           </button>
+      
         </div>
+        </div>
+     
       </div>
     </>
   );

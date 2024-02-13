@@ -6,7 +6,10 @@ const Form = () => {
   const [evaluationIdentity, setEvaluationIdentity] = useState("");
   const [evaluationExample, setEvaluationExample] = useState("");
   const [evaluationQuery, setEvaluationQuery] = useState("");
-
+  const search = window.location.search;
+    const params = new URLSearchParams(search);
+    const viva_id = params.get("id");
+    
   const handleModelChange = (event) => {
     setEvaluationModel(event.target.value);
   };
@@ -37,10 +40,36 @@ const Form = () => {
         evaluation_identity: evaluationIdentity,
         evaluation_example: evaluationExample,
         evaluation_query: evaluationQuery,
+        viva_id: viva_id,
       })
       .then((res) => {
         console.log("updated Data : ", res.data);
         alert("Updated");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  
+  const handleAdd = (event) => {
+    event.preventDefault();
+    axios.defaults.baseURL = process.env.REACT_APP_REST_API_BASE_URL;
+    axios.defaults.headers.post["Content-Type"] =
+      "application/json;charset=utf-8";
+    axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
+    axios
+      .post(process.env.REACT_APP_REST_API_BASE_URL + "/prompt_insert", {
+        method: "POST",
+     
+        evaluation_model: "",
+        evaluation_identity: "identity",
+        evaluation_example: "example",
+        evaluation_query: "query",
+        viva_id: viva_id,
+      })
+      .then((res) => {
+        console.log("insertted Data : ", res.data);
+        alert("Prompt created");
       })
       .catch((error) => {
         console.log(error);
@@ -52,12 +81,13 @@ const Form = () => {
       "application/json;charset=utf-8";
     axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
     axios
-      .get(process.env.REACT_APP_REST_API_BASE_URL + "/get_question_prompts", {
-        method: "GET",
+      .post(process.env.REACT_APP_REST_API_BASE_URL + "/get_question_prompts", {
+        method: "POST",
+        viva_id: viva_id,
       })
       .then((res) => {
         console.log("data here : ", res.data.data[0]);
-        setId(1);
+        setId(res.data.data[0].question_prompt_id);
         setEvaluationModel(res.data.data[0].evaluation_model);
         setEvaluationIdentity(res.data.data[0].evaluation_identity);
         setEvaluationExample(res.data.data[0].evaluation_example);
@@ -73,6 +103,7 @@ const Form = () => {
   return (
     <div className=" justify-center items-center h-screen mt-[44px] w-[100%] ">
       <form onSubmit={handleSubmit} className="w-full max-w-lg ">
+        <div style={{display: evaluationExample.length > 0 ? "block" : "none"}}>
         <div className="mb-4 sm:mr-2 sm:ml-2 md:ml-0 md:mr-0">
           <label
             className="block text-gray-700 text-sm font-bold mb-2 float-left"
@@ -138,12 +169,22 @@ const Form = () => {
             rows={8}
           ></textarea>
         </div>
+       
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline float-right"
           onClick={handleSubmit}
         >
-          Submit
+          Update
+        </button>
+        </div>
+        <button
+        style={{display: evaluationExample.length> 0 ? "none": 'inline'}}
+          type="submit"
+          className="bg-blue-500 w-full hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline float-left"
+          onClick={handleAdd}
+        >
+          Add prompt
         </button>
       </form>
     </div>

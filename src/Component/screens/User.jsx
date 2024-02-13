@@ -2,10 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Quiz from "../Widgets/Quiz";
 import { useNavigate } from "react-router-dom";
+import WelcomePage from "../pages/WelcomePage";
+import Feedback from "../pages/Feedback";
 const User = () => {
   const [question, setQuestion] = useState("");
+  const [isStarted, setIsStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [pause, setPause] = useState(false);
+  const [feedback2,setFeedback2] = useState(false)
+  const search = window.location.search;
+  const params = new URLSearchParams(search);
+  const id = params.get("id");
   const navigate = useNavigate();
   const getData = () => {
     axios.defaults.baseURL = process.env.REACT_APP_REST_API_BASE_URL;
@@ -13,8 +20,9 @@ const User = () => {
       "application/json;charset=utf-8";
     axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
     axios
-      .get(process.env.REACT_APP_REST_API_BASE_URL + "/get_question", {
-        method: "GET",
+      .post(process.env.REACT_APP_REST_API_BASE_URL + "/get_question", {
+        method: "POST",
+        viva_id: id,
       })
       .then((res) => {
         console.log("data here : ", res.data?.data[0]?.question);
@@ -52,7 +60,7 @@ const User = () => {
               gap: "8px",
               borderRadius: "4px",
             }}
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -138,7 +146,13 @@ const User = () => {
           </button>
         </div>
       </div>
-      <Quiz index={index} setIndex={setIndex} question={question} />
+      <div style={{display: feedback2 === false ?  '' : "none"}}>
+      { isStarted ? (
+      <Quiz index={index} setIndex={setIndex} question={question} setFeedback2={setFeedback2}  /> ):(
+       <WelcomePage question={question} setIsStarted={setIsStarted} />
+      )}
+      </div>
+         <div className="mt-[120px]"  style={{display: feedback2 === true ?  '' : "none"}}><Feedback /></div>
     </div>
   );
 };

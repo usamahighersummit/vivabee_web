@@ -1,47 +1,21 @@
 import React, { useState, useEffect } from "react";
-import Modal from "../Widgets/Modal";
-import axios from "axios";
-import Table from "../Widgets/Table";
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
-import FORM from "../Widgets/Form";
-import { useLocation, useNavigate } from "react-router-dom";
-const Admin = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data, setData] = useState();
-  const [editData, setEditData] = useState();
-  const getData = () => {
-    axios.defaults.baseURL = process.env.REACT_APP_REST_API_BASE_URL;
-    axios.defaults.headers.post["Content-Type"] =
-      "application/json;charset=utf-8";
-    axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
-    axios
-      .get(process.env.REACT_APP_REST_API_BASE_URL + "/get_question", {
-        method: "GET",
-      })
-      .then((res) => {
-        console.log("data here : ", res.data);
-        setData(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
+import Addviva from "../Widgets/Addviva";
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+
+const Admin = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     if (location.state) {
     } else {
       navigate("/");
     }
-    getData();
+  
   }, []);
 
   return (
@@ -53,44 +27,11 @@ const Admin = () => {
       </div>
       <Tabs>
         <TabList>
-          <Tab>Questions</Tab>
-          <Tab>Prompt</Tab>
+          <Tab>Add and View Viva</Tab>
+
         </TabList>
-        <TabPanel>
-          <div className="w-[100%]">
-            <Modal
-              isOpen={isModalOpen}
-              closeModal={closeModal}
-              getData={getData}
-              editData={editData}
-            />
-          </div>
-          <div className="mt-[24px] ">
-            <Table
-              data={data}
-              getData={getData}
-              openModal={openModal}
-              setEditData={setEditData}
-            />
-          </div>
-          <center>
-            {" "}
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-[24px]"
-              onClick={() => {
-                setEditData([]);
-                openModal();
-              }}
-            >
-              Add Question
-            </button>
-          </center>
-        </TabPanel>
-        <TabPanel>
-          <center>
-            <FORM />
-          </center>
-        </TabPanel>
+
+           <TabPanel><Addviva /></TabPanel>
       </Tabs>
     </>
   );
