@@ -70,6 +70,7 @@ const Form = () => {
       .then((res) => {
         console.log("insertted Data : ", res.data);
         alert("Prompt created");
+        getData();
       })
       .catch((error) => {
         console.log(error);
