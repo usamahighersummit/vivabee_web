@@ -20,6 +20,7 @@ const Addviva = () => {
          getData();
         })
         .catch((error) => {
+            alert("alert the error is "+ JSON.stringify(error))
             console.log(error);
         });
 
@@ -58,6 +59,7 @@ const Addviva = () => {
         setEditItemId(id);
     }
     const handleSave = (id, newText) => {
+   
        
         axios.post(`${process.env.REACT_APP_REST_API_BASE_URL}/viva_update`, {
             method: "POST",
@@ -150,7 +152,7 @@ const Addviva = () => {
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => handleEdit(item.viva_id,item.welcomeText)}
+                                            onClick={() => handleEdit(item.viva_id,item.viva_text)}
                                             className="px-2 py-2 bg-blue-500 text-white rounded-md mr-2"
                                         >
                                             Edit
