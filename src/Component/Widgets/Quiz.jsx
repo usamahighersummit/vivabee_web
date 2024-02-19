@@ -281,7 +281,7 @@ return (
           </p>
         </div>
         <div
-          className="main-content-divs  bg-[#5E526B] p-[12px] sm:max-h-[190px] md:max-h-[400px] "
+          className="main-content-divs  bg-[#5E526B] p-[12px] sm:max-h-[190px] md:max-h-[400px] lg:max-h-[400px] xlg:max-h-[400px] "
           style={{
             display: feedback.length > 0 ? "block" : "none",
                      
