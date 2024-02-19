@@ -9,7 +9,7 @@ const ReadAndHighlight = ({
 }) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(-2);
   const words = useMemo(
-    () => paragraph.match(/"[^"]+"|[^\s_=]+/g) || [],
+    () => paragraph.split("  ") || [],
     [paragraph]
   );
 

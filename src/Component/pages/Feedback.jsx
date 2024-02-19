@@ -67,6 +67,7 @@ const handleAdd = (e) => {
                     ></textarea>
                 </div>
                 <button
+                className='md:ml-[0px] md:mr-[0px] sm:ml-[10px] sm:mr-[10px]'
            style={{
 
             flexDirection: "column",

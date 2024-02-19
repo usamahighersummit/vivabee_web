@@ -4,6 +4,8 @@ import Login from "./Component/screens/Login";
 import Admin from "./Component/screens/Admin";
 import User from "./Component/screens/User";
 import ViewContent from "./Component/screens/ViewContent";
+import 'quill/dist/quill.snow.css'
+
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
           <Route path="/admin" element={<Admin />}></Route>
           <Route path="/home" element={<User />}></Route>
           <Route path="/view-content" element={<ViewContent />}></Route>
+    
         </Routes>
       </BrowserRouter>
     </div>

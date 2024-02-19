@@ -1,39 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import ReadAndHighlight from '../Widgets/ReadAndHighlight';
+import ReadAndHighlight from '../Widgets/ReadAndHighlightwelcome';
 
 const WelcomePage = (props) => {
   const [text, setText] = useState("");
   const [email, setEmail] = useState("");
   const [replay, setReplay] = useState(false);
   const [rotate, setRotate] = useState(false);
+  const [isValid, setIsValid] = useState(true); // State to track email validity
   const search = window.location.search;
   const params = new URLSearchParams(search);
   const viva_id = params.get("id");
-  const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
   function scrollToBottomSmoothly() {
     var contentDiv = document.querySelector(".main-content-divs"); // Adjust the selector as needed
-
     contentDiv.scrollTop = contentDiv?.scrollHeight;
   }
 
   const getData = () => {
     axios.post(`${process.env.REACT_APP_REST_API_BASE_URL}/get_welcome`, {
       method: "POST",
-  
       viva_id: viva_id,
-  })
-      .then((res) => {
-        console.log("data here : ", res.data);
-        setText(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    })
+    .then((res) => {
+      console.log("data here : ", res.data);
+      setText(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   };
 
   useEffect(() => {
@@ -41,91 +37,52 @@ const WelcomePage = (props) => {
   }, []);
 
   const handleSubmit = () => {
-    localStorage.setItem("email",email);
-    props.setIsStarted(true);
+    if(emailRegex.test(email)) {
+      setIsValid(true);
+      localStorage.setItem("email", email);
+      props.setIsStarted(true);
+    } else {
+      setIsValid(false);
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    const inputEmail = e.target.value;
+    setEmail(inputEmail);
   };
 
   return (
-    <div className="justify-center items-center sm:mt-[44px] md:mt-[190px] w-[100%]">
-      <center>
-        <p style={{
-          color: "rgba(255, 255, 255, 0.84)",
-          fontFamily: "Roboto",
-          fontSize: "28px",
-          fontStyle: "normal",
-          fontWeight: "700",
-          lineHeight: "28px",
-          letterSpacing: "0.028px",
-          marginBottom: "22px",
-        }}> <ReadAndHighlight
-        paragraph={text ? text.data[0].welcomeText    : "n/a"}
-        replay={replay}
-        setReplay={setReplay}
-        setRotate={setRotate}
-        scrollToBottomSmoothly={scrollToBottomSmoothly}
-
-
-      /></p>
-        <p className="main-content-divs md:w-[40%]" style={{
-          color: "rgba(255, 255, 255)",
-          opacity: "70%",
-          fontFamily: "Roboto",
-          fontSize: "22px",
-          fontStyle: "normal",
-          fontWeight: "400",
-          lineHeight: "28px",
-          letterSpacing: "0.022px",
-          width: "100%",
-        }}>
-         Email Here
-        </p>
-        <input
-          className="mt-[0px] shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          type="email"
-          value={email}
-          onChange={(e) => { setEmail(e.target.value) }}
-          required
-        />
-        <p className="md:w-[40%] mt-[24px]" style={{
-          color: "rgba(255, 255, 255)",
-          opacity: "70%",
-          fontFamily: "Roboto",
-          fontSize: "22px",
-          fontStyle: "normal",
-          fontWeight: "400",
-          lineHeight: "28px",
-          letterSpacing: "0.022px",
-          width: "100%",
-        }}>
-        
-        </p>
-        <button
-          className="mt-[24px]"
-          style={{
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "8px",
-            borderRadius: "4px",
-            backgroundColor: "white",
-            color: "#32263F",
-            fontFamily: "Roboto",
-            fontSize: "14px",
-            fontStyle: "normal",
-            fontWeight: "500",
-            lineHeight: "20px",
-            letterSpacing: "0.1px",
-            padding: "8px",
-            width: "137px",
-            marginBottom: "24px",
-            opacity: isValidEmail(email) ? "" : "0.4"
-          }}
-          onClick={handleSubmit}
-          disabled={!isValidEmail(email)}
-        >
-          Start Quiz
-        </button>
-      </center>
+    <div className="main-content-divs flex justify-center items-center">
+      <div className="md:w-[40%] lg:w-[40%] xl:w-[60%] sm:w-[100%] sm:mt-[62px] md:mt-[160px] sm:mr-[20px] md:mr-[0px] sm:ml-[20px] md:ml-[0px]">
+        <center>
+          <p className="text-white font-roboto text-2xl font-semibold mb-4 text-left">
+            <ReadAndHighlight
+          paragraph={text ?  text.data[0].welcomeText  : "n/a" }
+              replay={replay}
+              setReplay={setReplay}
+              setRotate={setRotate}
+              scrollToBottomSmoothly={scrollToBottomSmoothly}
+            />
+          </p>
+          <input
+            className="mt-2 shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-full h-12"
+            type="email"
+            value={email}
+            placeholder="Type your email here..."
+            onChange={handleEmailChange}
+            required
+          />
+          {!isValid && <p className="text-red-500 mt-1 text-sm">Enter valid email!</p>}
+          <button
+            className="mt-2 flex items-center justify-center gap-2 rounded bg-white text-[#32263F] font-roboto font-medium text-base px-6 py-2 w-full"
+            style={{ opacity: email.length ? "" : "0.81" }}
+            onClick={handleSubmit}
+            disabled={email.length === 0}
+          >
+            <span  style={{ opacity: email.length ? "" : "0.62" }}>Start Now</span>
+          </button>
+        </center>
+      </div>
     </div>
   );
 };
